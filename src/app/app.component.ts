@@ -25,9 +25,13 @@ export class AppComponent implements OnInit {
   private StateCompletionAlertClosed:boolean = false;
   private NullDataAlertClosed:boolean = false;
   private showStartBotton:boolean = true;
-  private code:number = 11111111;
+  private code:number;
   private nbrTelechargement = 2;
   private currentAttestation:any;
+  private currentReclamation:any;
+  activated: boolean = false;
+  clicked:boolean = false;
+  date:any;
   
   Students = [
     {
@@ -82,29 +86,6 @@ export class AppComponent implements OnInit {
     }); 
   }
 
-   /* public onGetAttestation(id:number) {
-    this.attestationService.getAttestation(id).subscribe((data) => {
-      this.DataAttest = Array (data);
-      this.currentAttestation = data;
-      console.log(this.currentAttestation);
-      if(data == null) {
-        this.showAttest = false;
-        this.NullDataAlertClosed = true;
-        setTimeout(() => this.NullDataAlertClosed = false, 6000);
-      } else if(this.isStateComplete(this.DataAttest[0].nbr_telechargement)){
-        this.showAttest = false;
-        this.StateCompletionAlertClosed = true;
-        setTimeout(() => this.StateCompletionAlertClosed = false, 6000);
-      } else {
-        this.isOkey = false;
-        this.showAttest = true;
-        this.showStartBotton = false;
-      }
-    },(err) => {
-      console.error(err);
-    });
-  } */ 
-
   public onGetAttestation(id:number) {
     this.attestationService.getAttestation(id).subscribe((data) => {
       //this.DataAttest = Array (data);
@@ -127,18 +108,6 @@ export class AppComponent implements OnInit {
       console.error(err);
     });
   }
-
-  /* public onUpdateStateCompletion(id:number):void {
-    this.DataAttest[0].state_completion = true;
-    this.attestationService.updateAttestation(id,this.DataAttest[0])
-    .subscribe(
-      response => {
-        console.log(response);
-      },
-      error => {
-        console.log(error);
-      });;//
-  }  */
   
   public onUpdateStateCompletion(id:number):void {
     this.currentAttestation.state_completion = true;
@@ -149,23 +118,8 @@ export class AppComponent implements OnInit {
       },
       error => {
         console.log(error);
-      });;//
+      });
   } 
-
-  /* public onUpdatenbrTelechargement(id:number):void {
-    --this.DataAttest[0].nbr_telechargement;
-    console.log(this.DataAttest[0].nbr_telechargement);
-    this.attestationService.updateAttestation(id,this.DataAttest[0])
-    .subscribe(
-      response => {
-        this.showAttest = false;
-        this.showStartBotton = true;
-        console.log(response);
-      },
-      error => {
-        console.log(error);
-      });;//
-  }  */
 
   public onUpdatenbrTelechargement(id:number):void {
     --this.currentAttestation.nbr_telechargement;
@@ -179,7 +133,7 @@ export class AppComponent implements OnInit {
       },
       error => {
         console.log(error);
-      });;//
+      });
   } 
 
   public isStateComplete(data): boolean {
@@ -187,5 +141,25 @@ export class AppComponent implements OnInit {
       return true;
     }
     return false;
+  }
+
+  public sendReclamation(form) {
+    if(this.currentAttestation!=null){
+      if(form.detail!="") {
+        form.done = false;
+        form.etudiant = this.currentAttestation.etudiant;
+        form.attestation = this.currentAttestation;
+        this.attestationService.postReclamation(form).subscribe(
+          response => {
+            console.log(response);
+            this.clicked=false;
+            this.activated = true;
+            setTimeout(() => this.activated = false, 3000);
+          },
+          error => {
+            console.log(error);
+          });
+      }
+    }
   }
 }
