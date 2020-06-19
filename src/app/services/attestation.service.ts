@@ -21,5 +21,9 @@ export class AttestationService {
     .set("Content-Type", "application/json");
     console.log('before Update');
     return this.httpClient.put(this.host+'attestation/'+id,student,{headers});
-   }   
+  }
+  
+  postReclamation(reclamation:any){
+    return this.httpClient.post(this.host+'reclamation/',reclamation);
+  }
 }
